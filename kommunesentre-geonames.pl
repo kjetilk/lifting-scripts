@@ -32,7 +32,7 @@ print '@base <http://lod.kjernsmo.net/> .' . "\n";
 print '@prefix gn: <http://www.geonames.org/ontology#> .' . "\n";
 print '@prefix owl: <http://www.w3.org/2002/07/owl#> .'. "\n";
 print '@prefix pos: <http://www.w3.org/2003/01/geo/wgs84_pos#> .' . "\n";
-print '@prefix ng: <http://example.org/no-geo-vokab#> .' . "\n";
+print '@prefix gd: <http://vocab.lenka.no/geo-deling#> .' . "\n";
 print '@prefix cc: <http://creativecommons.org/ns#> .' . "\n";
 
 foreach my $row (@{$res->{rows}}) {
