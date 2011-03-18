@@ -47,18 +47,18 @@ foreach my $row (@{$res->{rows}}) {
   $row->{lat} =~ s/\s//g;
   $row->{long} =~ s/\s//g;
 
-  print "\n<matrikkel/$row->{fnr}/$row->{knr}> a ng:Kommune ;\n";
+  print "\n<matrikkel/$row->{fnr}/$row->{knr}> a gd:Kommune ;\n";
   if ($row->{kgeonames}) {
     print "\towl:sameAs <http://sws.geonames.org/$row->{kgeonames}/> ;\n";
   }
   print "\tgn:parentFeature <matrikkel/$row->{fnr}> ;\n";
-  print "\tng:fylkenr \"$row->{fnr}\" ;\n";
-  print "\tng:kommunenr \"$row->{knr}\" ;\n";
+  print "\tgd:fylkenr \"$row->{fnr}\" ;\n";
+  print "\tgd:kommunenr \"$row->{knr}\" ;\n";
   print "\tpos:lat \"$row->{klat}\" ; \n";
   print "\tpos:long \"$row->{klong}\" . \n";
   print "\n<matrikkel/$row->{fnr}> gn:childrenFeatures <matrikkel/$row->{fnr}/$row->{knr}> .\n";
 
-  print "\n<sted/$row->{ssr}> a ng:Kommunesenter ;\n";
+  print "\n<sted/$row->{ssr}> a gd:Kommunesenter ;\n";
   print "\tgn:parentFeature <matrikkel/$row->{fnr}/$row->{knr}> ;\n";
   print "\tgn:parentADM1 <matrikkel/$row->{fnr}> ;\n";
   print "\tgn:parentADM2 <matrikkel/$row->{fnr}/$row->{knr}> ;\n";

@@ -38,8 +38,8 @@ foreach my $row (@{$res->{rows}}) {
   $row->{lat} =~ s/\s//g;
   $row->{long} =~ s/\s//g;
 
-  print "\n<$row->{fnr}> a ng:Fylke ;\n";
-  print "\tng:fylkenr \"$row->{fnr}\" ;\n";
+  print "\n<$row->{fnr}> a gd:Fylke ;\n";
+  print "\tgd:fylkenr \"$row->{fnr}\" ;\n";
   print "\tgn:officialName \"$row->{no}\"\@no ;\n";
   print "\tgn:officialName \"$row->{se}\"\@se ;\n";
   print "\tgn:officialName \"$row->{fkv}\"\@fkv ;\n";
