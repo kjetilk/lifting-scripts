@@ -20,7 +20,7 @@ my $rows = scraper {
 
 my $res = $rows->scrape( URI->new("http://www.erikbolstad.no/geo/noreg/kommunar/txt/") );
 
-print '@base <http://lod.kjernsmo.net/matrikkel/> .' . "\n";
+print '@base <http://data.lenka.no/geo/inndeling/> .' . "\n";
 print '@prefix gn: <http://www.geonames.org/ontology#> .' . "\n";
 print '@prefix cc: <http://creativecommons.org/ns#> .' . "\n";
 

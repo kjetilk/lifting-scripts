@@ -22,7 +22,7 @@ my $rows = scraper {
 
 my $res = $rows->scrape( URI->new("http://www.erikbolstad.no/geo/noreg/fylke/txt/") );
 
-print '@base <http://lod.kjernsmo.net/matrikkel/> .' . "\n";
+print '@base <http://data.lenka.no/geo/inndeling/> .' . "\n";
 print '@prefix gn: <http://www.geonames.org/ontology#> .' . "\n";
 print '@prefix owl: <http://www.w3.org/2002/07/owl#> .'. "\n";
 print '@prefix pos: <http://www.w3.org/2003/01/geo/wgs84_pos#> .' . "\n";

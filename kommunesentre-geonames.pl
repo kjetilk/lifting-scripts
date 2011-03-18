@@ -27,7 +27,7 @@ my $rows = scraper {
 
 my $res = $rows->scrape( URI->new("http://www.erikbolstad.no/geo/skandinavia/norske-kommunesenter/txt/") );
 
-print '@base <http://lod.kjernsmo.net/> .' . "\n";
+print '@base <http://data.lenka.no/geo/> .' . "\n";
 
 print '@prefix gn: <http://www.geonames.org/ontology#> .' . "\n";
 print '@prefix owl: <http://www.w3.org/2002/07/owl#> .'. "\n";
@@ -47,21 +47,21 @@ foreach my $row (@{$res->{rows}}) {
   $row->{lat} =~ s/\s//g;
   $row->{long} =~ s/\s//g;
 
-  print "\n<matrikkel/$row->{fnr}/$row->{knr}> a gd:Kommune ;\n";
+  print "\n<inndeling/$row->{fnr}/$row->{knr}> a gd:Kommune ;\n";
   if ($row->{kgeonames}) {
     print "\towl:sameAs <http://sws.geonames.org/$row->{kgeonames}/> ;\n";
   }
-  print "\tgn:parentFeature <matrikkel/$row->{fnr}> ;\n";
+  print "\tgn:parentFeature <inndeling/$row->{fnr}> ;\n";
   print "\tgd:fylkenr \"$row->{fnr}\" ;\n";
   print "\tgd:kommunenr \"$row->{knr}\" ;\n";
   print "\tpos:lat \"$row->{klat}\" ; \n";
   print "\tpos:long \"$row->{klong}\" . \n";
-  print "\n<matrikkel/$row->{fnr}> gn:childrenFeatures <matrikkel/$row->{fnr}/$row->{knr}> .\n";
+  print "\n<inndeling/$row->{fnr}> gn:childrenFeatures <inndeling/$row->{fnr}/$row->{knr}> .\n";
 
   print "\n<sted/$row->{ssr}> a gd:Kommunesenter ;\n";
-  print "\tgn:parentFeature <matrikkel/$row->{fnr}/$row->{knr}> ;\n";
-  print "\tgn:parentADM1 <matrikkel/$row->{fnr}> ;\n";
-  print "\tgn:parentADM2 <matrikkel/$row->{fnr}/$row->{knr}> ;\n";
+  print "\tgn:parentFeature <inndeling/$row->{fnr}/$row->{knr}> ;\n";
+  print "\tgn:parentADM1 <inndeling/$row->{fnr}> ;\n";
+  print "\tgn:parentADM2 <inndeling/$row->{fnr}/$row->{knr}> ;\n";
   if ($row->{geonames}) {
     print "\towl:sameAs <http://sws.geonames.org/$row->{geonames}/> ;\n";
   }
