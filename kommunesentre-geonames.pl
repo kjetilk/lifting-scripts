@@ -54,6 +54,7 @@ foreach my $row (@{$res->{rows}}) {
   print "\tgn:parentFeature <inndeling/$row->{fnr}> ;\n";
   print "\tgd:fylkenr \"$row->{fnr}\" ;\n";
   print "\tgd:kommunenr \"$row->{knr}\" ;\n";
+  print "\tgd:senter <sted/$row->{ssr}>;\n";
   print "\tpos:lat \"$row->{klat}\" ; \n";
   print "\tpos:long \"$row->{klong}\" . \n";
   print "\n<inndeling/$row->{fnr}> gn:childrenFeatures <inndeling/$row->{fnr}/$row->{knr}> .\n";
