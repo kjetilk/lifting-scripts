@@ -6,6 +6,19 @@ binmode(STDOUT, ":utf8");
 
 use URI;
 use Web::Scraper;
+use RDF::Helper '1.99_02';
+my $rdf = RDF::Helper->new(
+      namespaces => {
+		     gn => 'http://www.geonames.org/ontology#',
+		     owl => 'http://www.w3.org/2002/07/owl#',
+		     pos => 'http://www.w3.org/2003/01/geo/wgs84_pos#',
+		     gd => 'http://vocab.lenka.no/geo-deling#',
+		     cc => 'http://creativecommons.org/ns#',
+		     rdf => "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+		    },
+      base_uri => 'http://data.lenka.no/geo/inndeling/',
+      ExpandQNames => 1,
+   );
 
 my $rows = scraper {
   process "tr", "rows[]" => scraper {
@@ -22,13 +35,6 @@ my $rows = scraper {
 
 my $res = $rows->scrape( URI->new("http://www.erikbolstad.no/geo/noreg/fylke/txt/") );
 
-print '@base <http://data.lenka.no/geo/inndeling/> .' . "\n";
-print '@prefix gn: <http://www.geonames.org/ontology#> .' . "\n";
-print '@prefix owl: <http://www.w3.org/2002/07/owl#> .'. "\n";
-print '@prefix pos: <http://www.w3.org/2003/01/geo/wgs84_pos#> .' . "\n";
-print '@prefix gd: <http://vocab.lenka.no/geo-deling#> .' . "\n";
-print '@prefix cc: <http://creativecommons.org/ns#> .' . "\n";
-
 foreach my $row (@{$res->{rows}}) {
   next unless ($row->{fnr});
   if (length($row->{fnr}) == 1) {
@@ -38,17 +44,22 @@ foreach my $row (@{$res->{rows}}) {
   $row->{lat} =~ s/\s//g;
   $row->{long} =~ s/\s//g;
 
-  print "\n<$row->{fnr}> a gd:Fylke ;\n";
-  print "\tgd:fylkenr \"$row->{fnr}\" ;\n";
-  print "\tgn:officialName \"$row->{no}\"\@no ;\n";
-  print "\tgn:officialName \"$row->{se}\"\@se ;\n";
-  print "\tgn:officialName \"$row->{fkv}\"\@fkv ;\n";
-  print "\tpos:lat \"$row->{lat}\" ; \n";
-  print "\tpos:long \"$row->{long}\" ; \n";
-  print "\towl:sameAs <http://sws.geonames.org/$row->{geonames}/> .\n";
+  my $fylke = $rdf->get_object($row->{fnr});
+  $fylke->rdf_type('http://vocab.lenka.no/geo-deling#Fylke');
+  $fylke->gd_fylkenr($row->{fnr});
+  $rdf->assert_literal($row->{fnr}, 'gn:officialName', $rdf->new_literal($row->{no},  'no'));
+  $rdf->assert_literal($row->{fnr}, 'gn:officialName', $rdf->new_literal($row->{se},  'se'));
+  $rdf->assert_literal($row->{fnr}, 'gn:officialName', $rdf->new_literal($row->{fkv},  'fkv'));
+  $fylke->pos_lat($row->{lat});
+  $fylke->pos_long($row->{long});
+  $fylke->owl_sameAs("http://sws.geonames.org/$row->{geonames}/");
 }
 
-print "\n</dumps/fylke-geonames.ttl> a cc:Work ;\n";
-print "\tcc:license <http://creativecommons.org/licenses/by/3.0/> ;\n";
-print "\tcc:attributionName \"Erik Bolstad\" ;\n";
-print "\tcc:attributionURL <http://www.erikbolstad.no/geo/noreg/fylke/> .\n";
+my $dump = $rdf->get_object('/dumps/fylke-geonames.ttl');
+
+$dump->rdf_type('http://creativecommons.org/ns#Work');
+$dump->cc_license('http://creativecommons.org/licenses/by/3.0/');
+$dump->cc_attributionName('Erik Bolstad');
+$dump->cc_attributionURL('http://www.erikbolstad.no/geo/noreg/fylke/');
+
+print $rdf->serialize(format => 'turtle')
