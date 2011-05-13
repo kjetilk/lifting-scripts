@@ -6,6 +6,17 @@ binmode(STDOUT, ":utf8");
 
 use URI;
 use Web::Scraper;
+use RDF::Helper '1.99_02';
+my $rdf = RDF::Helper->new(
+      namespaces => {
+		     gn => 'http://www.geonames.org/ontology#',
+		     gd => 'http://vocab.lenka.no/geo-deling#',
+		     cc => 'http://creativecommons.org/ns#',
+		     rdf => "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+		    },
+      base_uri => 'http://data.lenka.no/geo/inndeling/',
+      ExpandQNames => 1,
+   );
 
 my $rows = scraper {
   process "tr", "rows[]" => scraper {
@@ -20,10 +31,6 @@ my $rows = scraper {
 
 my $res = $rows->scrape( URI->new("http://www.erikbolstad.no/geo/noreg/kommunar/txt/") );
 
-print '@base <http://data.lenka.no/geo/inndeling/> .' . "\n";
-print '@prefix gn: <http://www.geonames.org/ontology#> .' . "\n";
-print '@prefix cc: <http://creativecommons.org/ns#> .' . "\n";
-
 foreach my $row (@{$res->{rows}}) {
   next unless ($row->{knr});
   if (length($row->{fnr}) == 1) {
@@ -32,17 +39,21 @@ foreach my $row (@{$res->{rows}}) {
   if (length($row->{knr}) == 3) {
     $row->{knr} = "0$row->{knr}";
   }
-  
-  print "\n<$row->{fnr}/$row->{knr}>\n";
-  print "\tgn:officialName \"$row->{no}\"\@no ;\n";
+
+  my $subject = "$row->{fnr}/$row->{knr}";
+  $rdf->assert_resource($subject, 'rdf:type', 'gd:Kommune');
+  $rdf->assert_literal($subject, 'gn:officialName', $rdf->new_literal($row->{no},  'no'));
+  $rdf->assert_literal($subject, 'gn:officialName', $rdf->new_literal($row->{fkv},  'fkv'));
   if ($row->{se}) {
-    print "\tgn:officialName \"$row->{se}\"\@se ;\n";
+    $rdf->assert_literal($subject, 'gn:officialName', $rdf->new_literal($row->{se},  'se'));
   }
-  print "\tgn:officialName \"$row->{fkv}\"\@fkv .\n";
 }
 
+my $dump = $rdf->get_object('/dumps/kommune-navn.ttl');
 
-print "\n</dumps/kommune-navn.ttl> a cc:Work ;\n";
-print "\tcc:license <http://creativecommons.org/licenses/by/3.0/> ;\n";
-print "\tcc:attributionName \"Erik Bolstad\" ;\n";
-print "\tcc:attributionURL <http://www.erikbolstad.no/geo/noreg/kommunar/> .\n";
+$dump->rdf_type('http://creativecommons.org/ns#Work');
+$dump->cc_license('http://creativecommons.org/licenses/by/3.0/');
+$dump->cc_attributionName('Erik Bolstad');
+$dump->cc_attributionURL('http://www.erikbolstad.no/geo/noreg/kommunar/');
+
+print $rdf->serialize(format => 'turtle')
